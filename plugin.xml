@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Begasoft"
+            id="ch.ludin.compare.views.SqlServerCopy">
+      </category>
+      <view
+            id="ch.ludin.dbcompare.SqlServerCopy"
+            name="SqlServerCopy"
+            icon="icons/d_brown.png"
+            class="ch.ludin.dbcompare.SqlServerCopy"
+            category="ch.ludin.compare.views.SqlServerCopy"
+            inject="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               id="ch.ludin.dbcompare.SqlServerCopy"
+               relative="org.eclipse.ui.views.ProblemView"
+               relationship="right"
+               ratio="0.5">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="SqlServerCopy">
+      </product>
+   </extension>
+
+</plugin>

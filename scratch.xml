@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+	<model>
+		<team team_name="Group1">
+			<connection connection_name="ahahaha">
+				<url>url_1abcdd</url>
+				<username>a</username>
+				<password>p</password>
+			</connection>
+			<connection connection_name="label_1_3">
+				<url>url_3 adadf</url>
+				<username>a</username>
+				<password>p</password>
+			</connection>
+			<connection connection_name="label_1_2">
+				<url>url_2a</url>
+				<username>aBC</username>
+				<password>p</password>
+			</connection>
+		</team>
+		<team team_name="Group2">
+			<connection connection_name="label_2_2">
+				<url>url_2</url>
+				<username>username_2</username>
+				<password>password_2</password>
+			</connection>
+			<connection connection_name="label_2_3">
+				<url>url_3</url>
+				<username>username_2</username>
+				<password>password_3</password>
+			</connection>
+			<connection connection_name="label_2_1">
+				<url>url_1</url>
+				<username>username_1</username>
+				<password>password_1</password>
+			</connection>
+		</team>
+		<team team_name="Group3">
+			<connection connection_name="label_3_1">
+				<url>url_1</url>
+				<username>username_1</username>
+				<password>password_1</password>
+			</connection>
+			<connection connection_name="label_3_2">
+				<url>url_2</url>
+				<username>username_2</username>
+				<password>password_2</password>
+			</connection>
+			<connection connection_name="label_3_3">
+				<url>url_3</url>
+				<username>username_2</username>
+				<password>password_3</password>
+			</connection>
+		</team>
+	</model>
+</view>
