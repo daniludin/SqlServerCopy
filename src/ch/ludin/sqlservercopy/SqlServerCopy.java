@@ -83,7 +83,7 @@ public class SqlServerCopy extends ViewPart {
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "ch.ludin.dbcompare.views.SqlServerCopy";
+	public static final String ID = "ch.ludin.sqlservercopy.SqlServerCopy";
 	@Inject
 	IWorkbench workbench;
 	private SearchDbConfigsAction testAction = new SearchDbConfigsAction(this);

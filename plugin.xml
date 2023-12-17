@@ -5,14 +5,14 @@
          point="org.eclipse.ui.views">
       <category
             name="Begasoft"
-            id="ch.ludin.compare.views.SqlServerCopy">
+            id="ch.ludin.sqlservercopy.SqlServerCopy">
       </category>
       <view
             id="ch.ludin.sqlservercopy.SqlServerCopy"
             name="SqlServerCopy"
             icon="icons/d_brown.png"
             class="ch.ludin.sqlservercopy.SqlServerCopy"
-            category="ch.ludin.compare.views.SqlServerCopy"
+            category="ch.ludin.sqlservercopy.SqlServerCopy"
             inject="true">
       </view>
    </extension>
