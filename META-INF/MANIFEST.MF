@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: SqlServerCopy
 Bundle-SymbolicName: SqlServerCopy;singleton:=true
 Bundle-Version: 1.1.4
-Bundle-Activator: ch.ludin.dbcompare.Activator
+Bundle-Activator: ch.ludin.sqlservercopy.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.compare,

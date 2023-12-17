@@ -8,10 +8,10 @@
             id="ch.ludin.compare.views.SqlServerCopy">
       </category>
       <view
-            id="ch.ludin.dbcompare.SqlServerCopy"
+            id="ch.ludin.sqlservercopy.SqlServerCopy"
             name="SqlServerCopy"
             icon="icons/d_brown.png"
-            class="ch.ludin.dbcompare.SqlServerCopy"
+            class="ch.ludin.sqlservercopy.SqlServerCopy"
             category="ch.ludin.compare.views.SqlServerCopy"
             inject="true">
       </view>
@@ -21,7 +21,7 @@
       <perspectiveExtension
             targetID="org.eclipse.jdt.ui.JavaPerspective">
          <view
-               id="ch.ludin.dbcompare.SqlServerCopy"
+               id="ch.ludin.sqlservercopy.SqlServerCopy"
                relative="org.eclipse.ui.views.ProblemView"
                relationship="right"
                ratio="0.5">
