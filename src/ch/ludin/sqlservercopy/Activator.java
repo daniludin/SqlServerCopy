@@ -30,6 +30,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final String IMAGE_ID_DELETE = "delete";
 	public static final String IMAGE_ID_DUPLICATE = "duplicate";
 	public static final String IMAGE_ID_LIST = "list";
+	public static final String IMAGE_ID_COPY = "copy";
 	public static final String IMAGE_ID_LOAD = "loading4";
 
 
@@ -70,6 +71,7 @@ public class Activator extends AbstractUIPlugin {
 		registry.put(IMAGE_ID_DELETE, ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/delete.gif"), null)));
 		registry.put(IMAGE_ID_DUPLICATE, ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/duplicate.png"), null)));
 		registry.put(IMAGE_ID_LIST, ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/list.gif"), null)));
+		registry.put(IMAGE_ID_COPY, ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/copyWithTag.gif"), null)));
 		registry.put(IMAGE_ID_LOAD, ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/loading4.gif"), null)));
 		
 		

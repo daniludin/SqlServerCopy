@@ -52,10 +52,12 @@ import org.eclipse.ui.part.ViewPart;
 import ch.ludin.sqlservercopy.actions.AddAction;
 import ch.ludin.sqlservercopy.actions.CompareAction;
 import ch.ludin.sqlservercopy.actions.CompareEditorAction;
+import ch.ludin.sqlservercopy.actions.CopyAction;
 import ch.ludin.sqlservercopy.actions.DeleteAction;
 import ch.ludin.sqlservercopy.actions.DuplicateAction;
 import ch.ludin.sqlservercopy.actions.ListAction;
 import ch.ludin.sqlservercopy.actions.SearchDbConfigsAction;
+import ch.ludin.sqlservercopy.handler.CopyDbDialog;
 import ch.ludin.sqlservercopy.handler.DeploymentDescriptorDialog;
 import ch.ludin.sqlservercopy.handler.DeploymentDescriptorHandler;
 import ch.ludin.sqlservercopy.model.ConnectionItem;
@@ -63,6 +65,7 @@ import ch.ludin.sqlservercopy.model.CustomSQLException;
 import ch.ludin.sqlservercopy.model.DatabaseStructureReader;
 import ch.ludin.sqlservercopy.model.DatabaseStructureReaderFactory;
 import ch.ludin.sqlservercopy.model.ModelProvider;
+import ch.ludin.sqlservercopy.model.CopyDatabaseStructureSqlserver;
 import ch.ludin.sqlservercopy.model.StringInput;
 import ch.ludin.sqlservercopy.model.StringStorage;
 import ch.ludin.sqlservercopy.view.ConnectionViewerComparator;
@@ -92,6 +95,7 @@ public class SqlServerCopy extends ViewPart {
 	private DeleteAction deleteAction = new DeleteAction(this);
 	private CompareAction compareAction = new CompareAction(this);
 	private ListAction listAction = new ListAction(this);
+	private CopyAction copyAction = new CopyAction(this);
 	private TableViewer viewer;
 	private IStructuredSelection selection;
 	StringBuffer sbLeft = null;
@@ -149,8 +153,10 @@ public class SqlServerCopy extends ViewPart {
 				setSelection(viewer.getStructuredSelection());
 				if (getSelection().size() == 2) {
 					compareAction.setEnabled(true);
+					copyAction.setEnabled(true);
 				} else {
 					compareAction.setEnabled(false);
+					copyAction.setEnabled(false);
 				}
 				if (getSelection().size() == 1) {
 					listAction.setEnabled(true);
@@ -165,32 +171,32 @@ public class SqlServerCopy extends ViewPart {
 
 		viewer.getControl().addControlListener(new ControlListener() {
 
-	        @Override
-	        public void controlResized(ControlEvent arg0) {
-	            Rectangle rect = viewer.getTable().getClientArea();
-	            if(rect.width>0){
-	                int extraSpace=rect.width/(table.getColumnCount() - 1);
+			@Override
+			public void controlResized(ControlEvent arg0) {
+				Rectangle rect = viewer.getTable().getClientArea();
+				if (rect.width > 0) {
+					int extraSpace = rect.width / (table.getColumnCount() - 1);
 
-					table.getColumns()[0].setWidth((rect.width/100) * 3);
-					table.getColumns()[1].setWidth((rect.width/100) * 15);
-					table.getColumns()[2].setWidth((rect.width/100) * 35);
-					table.getColumns()[3].setWidth((rect.width/100) * 15);
-					table.getColumns()[4].setWidth((rect.width/100) * 15);
-					table.getColumns()[5].setWidth((rect.width/100) * 3);
-					table.getColumns()[6].setWidth((rect.width/100) * 24);
+					table.getColumns()[0].setWidth((rect.width / 100) * 3);
+					table.getColumns()[1].setWidth((rect.width / 100) * 15);
+					table.getColumns()[2].setWidth((rect.width / 100) * 35);
+					table.getColumns()[3].setWidth((rect.width / 100) * 15);
+					table.getColumns()[4].setWidth((rect.width / 100) * 15);
+					table.getColumns()[5].setWidth((rect.width / 100) * 3);
+					table.getColumns()[6].setWidth((rect.width / 100) * 24);
 
-	            }
-	        }
+				}
+			}
 
-	        @Override
-	        public void controlMoved(ControlEvent arg0) {
-	            // TODO Auto-generated method stub
+			@Override
+			public void controlMoved(ControlEvent arg0) {
+				// TODO Auto-generated method stub
 
-	        }
-	    });
+			}
+		});
 
 	}
-	
+
 //	  private void layoutTableColumns()
 //	  {
 //	    // Resize the columns to fit the contents
@@ -224,6 +230,7 @@ public class SqlServerCopy extends ViewPart {
 	private void fillContextMenu(IMenuManager manager) {
 		if (getSelection().size() == 2) {
 			manager.add(compareAction);
+			manager.add(copyAction);
 		}
 		if (getSelection().size() == 1) {
 			manager.add(listAction);
@@ -241,9 +248,11 @@ public class SqlServerCopy extends ViewPart {
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
+		manager.add(listAction);
 		manager.add(compareAction);
 		manager.add(addAction);
 		manager.add(testAction);
+		manager.add(copyAction);
 	}
 
 	// This will create the columns for the table
@@ -308,18 +317,78 @@ public class SqlServerCopy extends ViewPart {
 		getViewer().refresh();
 		DeploymentDescriptorHandler ddh = new DeploymentDescriptorHandler();
 		try {
-			
+
 			DeploymentDescriptorDialog ddDialog = new DeploymentDescriptorDialog(getSite().getShell(),
 					ddh.getSearchDescriptors());
 
 			if (ddDialog.open() == Window.OK) {
-				ModelProvider.INSTANCE.getConnectionItems().addAll(ddDialog.getSelectedItems());	
+				ModelProvider.INSTANCE.getConnectionItems().addAll(ddDialog.getSelectedItems());
 			}
-			
+
 			getViewer().refresh();
 		} catch (Exception e) {
 			showError(e.getMessage());
 		}
+	}
+
+	public void startDatabaseCopy() {
+		getViewer().refresh();
+//		DeploymentDescriptorHandler ddh = new DeploymentDescriptorHandler();
+//		try {
+//		
+//		DeploymentDescriptorDialog ddDialog = new DeploymentDescriptorDialog(getSite().getShell(),
+//				ddh.getSearchDescriptors());
+//
+//		if (ddDialog.open() == Window.OK) {
+//			ModelProvider.INSTANCE.getConnectionItems().addAll(ddDialog.getSelectedItems());	
+//		}
+//		
+//		getViewer().refresh();
+//	} catch (Exception e) {
+//		showError(e.getMessage());
+//	}
+
+		try {
+
+			Iterator<?> it = getSelection().iterator();
+			ConnectionItem p1 = (ConnectionItem) it.next();
+			ConnectionItem p2 = (ConnectionItem) it.next();
+			CopyDbDialog ddDialog = new CopyDbDialog(getSite().getShell(), p1, p2);
+
+			if (ddDialog.open() == Window.OK) {
+				ModelProvider.INSTANCE.getConnectionItems().addAll(ddDialog.getSelectedItems());
+			}
+
+			getViewer().refresh();
+			
+			ModelProvider.INSTANCE.saveModel();
+			Job job = new Job("DbCopy running...") {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					Iterator<?> it = getSelection().iterator();
+					ConnectionItem p1 = (ConnectionItem) it.next();
+
+					ModelProvider.INSTANCE.setErrorMessage(p1.getId(), "", true);
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							viewer.refresh();
+						}
+					});
+
+					copyDatabase(p1.getId(), p1.getUrl(), p1.getUsername(), p1.getPassword());
+					return Status.OK_STATUS;
+				}
+
+			};
+			job.setUser(true);
+			job.schedule();
+
+			
+			
+		} catch (Exception e) {
+			showError(e.getMessage());
+		}
+
 	}
 
 	public void duplicate() {
@@ -403,7 +472,55 @@ public class SqlServerCopy extends ViewPart {
 		boolean noConnectionError = true;
 
 		try {
-			DatabaseStructureReader rds = new DatabaseStructureReaderFactory().getDatabaseStructureReader(getSite().getShell(), urlL);
+			DatabaseStructureReader rds = new DatabaseStructureReaderFactory()
+					.getDatabaseStructureReader(getSite().getShell(), urlL);
+			sbLeft = rds.readDbStructure(urlL, userL, pwL);
+
+		} catch (CustomSQLException e1) {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					if (e1.getErrorMessage() != null) {
+						ModelProvider.INSTANCE.setErrorMessage(idL, e1.getErrorMessage(), false);
+						viewer.refresh();
+
+					}
+
+				}
+			});
+			noConnectionError = false;
+		}
+
+		if (!noConnectionError) {
+			return;
+		}
+
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+
+				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				IWorkbenchPage page = window.getActivePage();
+				IStorage storage = new StringStorage(sbLeft.toString());
+				IStorageEditorInput input = new StringInput(storage);
+
+				try {
+					page.openEditor(input, "org.eclipse.ui.DefaultTextEditor");
+				} catch (PartInitException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+	}
+
+	private void copyDatabase(String idL, String urlL, String userL, String pwL) {
+		boolean noConnectionError = true;
+
+		try {
+//			DatabaseStructureReader rds = new DatabaseStructureReaderFactory()
+//					.getDatabaseStructureReader(getSite().getShell(), urlL);
+			
+			
+			DatabaseStructureReader rds = new CopyDatabaseStructureSqlserver(getSite().getShell());
 			sbLeft = rds.readDbStructure(urlL, userL, pwL);
 
 		} catch (CustomSQLException e1) {
@@ -448,7 +565,8 @@ public class SqlServerCopy extends ViewPart {
 		boolean noConnectionErrorRight = true;
 
 		try {
-			DatabaseStructureReader rds = new DatabaseStructureReaderFactory().getDatabaseStructureReader(getSite().getShell(), urlL);
+			DatabaseStructureReader rds = new DatabaseStructureReaderFactory()
+					.getDatabaseStructureReader(getSite().getShell(), urlL);
 			sbLeft = rds.readDbStructure(urlL, userL, pwL);
 
 		} catch (CustomSQLException e1) {
@@ -465,7 +583,8 @@ public class SqlServerCopy extends ViewPart {
 			noConnectionErrorLeft = false;
 		}
 		try {
-			DatabaseStructureReader rdsRight = new DatabaseStructureReaderFactory().getDatabaseStructureReader(getSite().getShell(), urlR);
+			DatabaseStructureReader rdsRight = new DatabaseStructureReaderFactory()
+					.getDatabaseStructureReader(getSite().getShell(), urlR);
 			sbRight = rdsRight.readDbStructure(urlR, userR, pwR);
 		} catch (CustomSQLException e1) {
 			Display.getDefault().asyncExec(new Runnable() {
